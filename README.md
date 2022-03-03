@@ -1,4 +1,4 @@
-# knight_jump_game
+# Knight jump game
 
 Try to eat all ennemies with your knight on the chess board.
 
