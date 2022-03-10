@@ -25,6 +25,7 @@ import 'package:logger/logger.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 const EMPTY_BOARD = '8/8/8/8/8/8/8/8 w - - 0 1';
+const START_POSITION = '8/8/8/2n5/r3p3/8/1N3r2/3b4 w - - 0 1';
 
 void main() {
   runApp(const MyApp());
@@ -78,6 +79,31 @@ class _MyHomePageState extends State<MyHomePage> {
   var _blackAtBottom = false;
   var _whitePlayerType = PlayerType.human;
   var _blackPlayerType = PlayerType.computer;
+  var _chess = chesslib.Chess.fromFEN(START_POSITION);
+
+  void validateMove({required ShortMove move}) {
+    final playerSide = chesslib.Color.WHITE;
+    final ennemySide = chesslib.Color.BLACK;
+    final playerSideFen = 'w';
+
+    final moveDefinition = {'from': move.from, 'to': move.to};
+    final fromPiece = _chess.get(move.from);
+    final toPiece = _chess.get(move.to);
+    if (fromPiece == null) return;
+    if (fromPiece.type != chesslib.PieceType.KNIGHT ||
+        fromPiece.color != playerSide) return;
+    if (toPiece == null) return;
+    if (toPiece.color != ennemySide) return;
+    final moveSuccess = _chess.move(moveDefinition);
+    if (moveSuccess) {
+      setState(() {
+        var newFenParts = _chess.fen.split(' ');
+        newFenParts[1] = playerSideFen;
+        final newFen = newFenParts.join(' ');
+        _chess = chesslib.Chess.fromFEN(newFen);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -92,13 +118,15 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             SimpleChessBoard(
-              fen: EMPTY_BOARD,
-              onMove: ({required ShortMove move}) {},
+              fen: _chess.fen,
+              onMove: validateMove,
               orientation: boardOrientation,
               whitePlayerType: _whitePlayerType,
               blackPlayerType: _blackPlayerType,
               showCoordinatesZone: false,
-              onPromote: () async {},
+              onPromote: () async {
+                return null;
+              },
               engineThinking: false,
             )
           ],
