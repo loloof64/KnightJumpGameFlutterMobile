@@ -1,2 +1,8 @@
 app:
   title: "Saltos de caballero"
+button:
+  ok: "De accuerdo"
+  cancel: "Anular"
+game:
+  exit_current_game_title: "¿Salir del juego actual?"
+  exit_current_game_msg: "¿Quieres salir del juego actual y comenzar uno nuevo?"

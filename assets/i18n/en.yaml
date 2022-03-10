@@ -1,2 +1,8 @@
 app:
   title: "Knight Jump Game"
+button:
+  ok: "OK"
+  cancel: "Cancel"
+game:
+  exit_current_game_title: "Exit current game ?"
+  exit_current_game_msg: "Do you want to exit current game and start a new one ?"

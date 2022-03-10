@@ -1,2 +1,8 @@
 app:
   title: "Sauts de cavalier"
+button:
+  ok: "D'accord"
+  cancel: "Annuler"
+game:
+  exit_current_game_title: "Quitter la partie en cours ?"
+  exit_current_game_msg: "Souhaitez-vous quitter la partie en cours et démarrer une nouvelle ?"
