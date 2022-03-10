@@ -19,6 +19,12 @@
 import 'package:flutter/material.dart';
 import 'package:chess/chess.dart' as chesslib;
 import 'package:simple_chess_board/simple_chess_board.dart';
+import 'package:flutter_i18n/loaders/decoders/yaml_decode_strategy.dart';
+import 'package:flutter_i18n/flutter_i18n.dart';
+import 'package:logger/logger.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+
+const EMPTY_BOARD = '8/8/8/8/8/8/8/8 w - - 0 1';
 
 void main() {
   runApp(const MyApp());
@@ -30,7 +36,29 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Knight jump game',
+      onGenerateTitle: (context) => FlutterI18n.translate(context, 'app.title'),
+      localizationsDelegates: [
+        FlutterI18nDelegate(
+          translationLoader: FileTranslationLoader(
+            basePath: 'assets/i18n',
+            useCountryCode: false,
+            fallbackFile: 'en',
+            decodeStrategies: [YamlDecodeStrategy()],
+          ),
+          missingTranslationHandler: (key, locale) {
+            Logger().w(
+                "--- Missing Key: $key, languageCode: ${locale?.languageCode}");
+          },
+        ),
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate
+      ],
+      supportedLocales: const [
+        Locale('en', ''),
+        Locale('fr', ''),
+        Locale('es', ''),
+      ],
       theme: ThemeData(
         primarySwatch: Colors.lightGreen,
       ),
@@ -57,14 +85,14 @@ class _MyHomePageState extends State<MyHomePage> {
         _blackAtBottom ? BoardColor.black : BoardColor.white;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Knight jump game'),
+        title: I18nText('app.title'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             SimpleChessBoard(
-              fen: '8/8/8/8/8/8/8/8 w - - 0 1',
+              fen: EMPTY_BOARD,
               onMove: ({required ShortMove move}) {},
               orientation: boardOrientation,
               whitePlayerType: _whitePlayerType,
