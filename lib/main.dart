@@ -16,6 +16,8 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'logic/board_utils.dart';
 import 'logic/constants.dart';
@@ -129,10 +131,18 @@ class _MyHomePageState extends State<MyHomePage> {
               maxValue: MAX_ENEMIES_COUNT,
               startValue: _ennemiesCount,
               onValidated: (newCount) {
+                var random = new Random();
+                var playerHasWhite = random.nextBool();
                 setState(() {
                   _ennemiesCount = newCount;
+                  _playerHasWhite = playerHasWhite;
+                  _whitePlayerType =
+                      _playerHasWhite ? PlayerType.human : PlayerType.computer;
+                  _blackPlayerType =
+                      _playerHasWhite ? PlayerType.computer : PlayerType.human;
                   final newFen = generateGame(
-                      playerHasWhite: true, ennemiesCount: _ennemiesCount);
+                      playerHasWhite: _playerHasWhite,
+                      ennemiesCount: _ennemiesCount);
                   _fen = newFen;
                 });
               });
@@ -140,8 +150,10 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void validateMove({required ShortMove move}) {
-    final playerSide = chesslib.Color.WHITE;
-    final ennemySide = chesslib.Color.BLACK;
+    final playerSide =
+        _playerHasWhite ? chesslib.Color.WHITE : chesslib.Color.BLACK;
+    final ennemySide =
+        _playerHasWhite ? chesslib.Color.BLACK : chesslib.Color.WHITE;
     final chess = chesslib.Chess.fromFEN(_fen);
 
     final fromPiece = chess.get(move.from);
