@@ -5,25 +5,25 @@ bool isGameLost({required String position, required bool playerHasWhite}) {
   final board = positionToBoardArray(position: position);
   final playerKnightCell =
       _findPlayerKnightCell(board: board, playerHasWhite: playerHasWhite);
-  final trappableEnemiesCount = _findTrappableEnemiesCount(
+  final trappableennemiesCount = _findTrappableennemiesCount(
     board: board,
     playerHasWhite: playerHasWhite,
     playerKnightCell: playerKnightCell,
   );
-  final remainingEnemiesCount = _findRemainingEnemiesCount(
+  final remainingennemiesCount = _findRemainingennemiesCount(
     board: board,
     playerHasWhite: playerHasWhite,
   );
-  return remainingEnemiesCount > 0 && trappableEnemiesCount == 0;
+  return remainingennemiesCount > 0 && trappableennemiesCount == 0;
 }
 
 bool isGameWon({required String position, required bool playerHasWhite}) {
   final board = positionToBoardArray(position: position);
-  final remainingEnemiesCount = _findRemainingEnemiesCount(
+  final remainingennemiesCount = _findRemainingennemiesCount(
     board: board,
     playerHasWhite: playerHasWhite,
   );
-  return remainingEnemiesCount == 0;
+  return remainingennemiesCount == 0;
 }
 
 Cell _findPlayerKnightCell(
@@ -46,7 +46,7 @@ Cell _findPlayerKnightCell(
   return playerKnightLocation;
 }
 
-int _findTrappableEnemiesCount(
+int _findTrappableennemiesCount(
     {required List<List<String>> board,
     required bool playerHasWhite,
     required Cell playerKnightCell}) {
@@ -67,7 +67,7 @@ int _findTrappableEnemiesCount(
   return result;
 }
 
-int _findRemainingEnemiesCount(
+int _findRemainingennemiesCount(
     {required List<List<String>> board, required bool playerHasWhite}) {
   var result = 0;
 

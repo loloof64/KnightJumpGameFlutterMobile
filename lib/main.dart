@@ -18,6 +18,7 @@
 */
 import 'package:flutter/material.dart';
 import 'logic/board_utils.dart';
+import 'logic/constants.dart';
 import 'logic/board_elements.dart';
 import 'package:chess/chess.dart' as chesslib;
 import 'components/dialog_button.dart';
@@ -28,8 +29,6 @@ import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:logger/logger.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'logic/win_loss_check.dart';
-
-const EMPTY_BOARD = '8/8/8/8/8/8/8/8 w - - 0 1';
 
 void main() {
   runApp(const MyApp());
@@ -85,6 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
   var _blackPlayerType = PlayerType.computer;
   var _fen = EMPTY_BOARD;
   var _playerHasWhite = true;
+  var _ennemiesCount = MIN_ENEMIES_COUNT;
 
   void startNewGame() {
     if (_fen == EMPTY_BOARD)
@@ -98,9 +98,9 @@ class _MyHomePageState extends State<MyHomePage> {
               content: I18nText('game.exit_current_game_msg'),
               actions: [
                 DialogActionButton(
-                  onPressed: () {
-                    doStartNewGame();
+                  onPressed: () async {
                     Navigator.of(context).pop();
+                    doStartNewGame();
                   },
                   textContent: I18nText('button.ok'),
                   backgroundColor: Colors.greenAccent,
@@ -121,10 +121,22 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void doStartNewGame() {
-    final newFen = generateGame(playerHasWhite: true);
-    setState(() {
-      _fen = newFen;
-    });
+    showDialog<int?>(
+        context: context,
+        builder: (ctx) {
+          return _EnnemiesCountSelectionDialog(
+              minValue: MIN_ENEMIES_COUNT,
+              maxValue: MAX_ENEMIES_COUNT,
+              startValue: _ennemiesCount,
+              onValidated: (newCount) {
+                setState(() {
+                  _ennemiesCount = newCount;
+                  final newFen = generateGame(
+                      playerHasWhite: true, ennemiesCount: _ennemiesCount);
+                  _fen = newFen;
+                });
+              });
+        });
   }
 
   void validateMove({required ShortMove move}) {
@@ -253,6 +265,86 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               ),
       ),
+    );
+  }
+}
+
+class _EnnemiesCountSelectionDialog extends StatefulWidget {
+  final int minValue;
+  final int maxValue;
+  final int startValue;
+  final void Function(int selectedCount) onValidated;
+  const _EnnemiesCountSelectionDialog({
+    Key? key,
+    required this.minValue,
+    required this.maxValue,
+    required this.startValue,
+    required this.onValidated,
+  }) : super(key: key);
+
+  @override
+  State<_EnnemiesCountSelectionDialog> createState() =>
+      _EnnemiesCountSelectionDialogState();
+}
+
+class _EnnemiesCountSelectionDialogState
+    extends State<_EnnemiesCountSelectionDialog> {
+  var _count = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _count = widget.startValue;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var valuesChildren = <DropdownMenuItem<int>>[];
+    for (var value = widget.minValue; value <= widget.maxValue; value++) {
+      valuesChildren.add(
+        DropdownMenuItem(
+          child: Text("$value"),
+          value: value,
+        ),
+      );
+    }
+    return AlertDialog(
+      title: I18nText('game.new_game_title'),
+      content: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          DropdownButton<int>(
+              value: _count,
+              items: valuesChildren,
+              onChanged: (newValue) {
+                if (newValue != null)
+                  setState(() {
+                    _count = newValue;
+                  });
+              }),
+        ],
+      ),
+      actions: [
+        DialogActionButton(
+          onPressed: () {
+            widget.onValidated(_count);
+            Navigator.of(context).pop();
+          },
+          textContent: I18nText('button.ok'),
+          backgroundColor: Colors.greenAccent,
+          textColor: Colors.white,
+        ),
+        DialogActionButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          textContent: I18nText('button.cancel'),
+          backgroundColor: Colors.redAccent,
+          textColor: Colors.white,
+        ),
+      ],
     );
   }
 }

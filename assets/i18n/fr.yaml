@@ -8,3 +8,5 @@ game:
   exit_current_game_msg: "Souhaitez-vous quitter la partie en cours et démarrer une nouvelle ?"
   won: "Vous avez gagné."
   lost: "Vous avez perdu."
+  new_game_title: "Nouvelle partie"
+  ennemies_count: "Nombre d'ennemis"

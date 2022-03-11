@@ -1,11 +1,10 @@
 import 'dart:math';
 import 'board_utils.dart';
-
 import 'board_elements.dart';
 
 const _PIECES_TYPES = ['p', 'n', 'b', 'r', 'q'];
 
-String generateGame({bool playerHasWhite = true, int enemiesCount = 10}) {
+String generateGame({bool playerHasWhite = true, int ennemiesCount = 10}) {
   var board = List.generate(8, (_) => List.generate(8, (_) => ''));
 
   final knightSquare = _generatePlayerKnightLocation(
@@ -15,9 +14,9 @@ String generateGame({bool playerHasWhite = true, int enemiesCount = 10}) {
 
   var previousCell = knightSquare;
 
-  for (var addedEnemiesCount = 0;
-      addedEnemiesCount < enemiesCount;
-      addedEnemiesCount++) {
+  for (var addedennemiesCount = 0;
+      addedennemiesCount < ennemiesCount;
+      addedennemiesCount++) {
     var nextEnemyCell = _generateEnemyLocation(
         previousCell: previousCell,
         playerKnightCell: knightSquare,
