@@ -496,6 +496,25 @@ class _SolutionZoneState extends State<SolutionZone> {
             children: [
               IconButton(
                 onPressed: () {
+                  while (_currentIndex > 0) {
+                    widget.onPreviousStepSelected(
+                        step: widget.solution[_currentIndex],
+                        previousStep: _currentIndex > 0
+                            ? widget.solution[_currentIndex - 1]
+                            : null);
+                    setState(() {
+                      _currentIndex--;
+                    });
+                  }
+                  setState(() {
+                    _currentIndex = -1;
+                  });
+                  widget.onFirstPositionSelected();
+                },
+                icon: Icon(Icons.skip_previous),
+              ),
+              IconButton(
+                onPressed: () {
                   if (_currentIndex > -1) {
                     if (_currentIndex > 0) {
                       widget.onPreviousStepSelected(
@@ -504,6 +523,9 @@ class _SolutionZoneState extends State<SolutionZone> {
                               ? widget.solution[_currentIndex - 1]
                               : null);
                     } else {
+                      setState(() {
+                        _currentIndex = 0;
+                      });
                       widget.onFirstPositionSelected();
                     }
                     setState(() {
@@ -524,6 +546,18 @@ class _SolutionZoneState extends State<SolutionZone> {
                   }
                 },
                 icon: Icon(Icons.arrow_forward),
+              ),
+              IconButton(
+                onPressed: () {
+                  while (_currentIndex < widget.solution.length - 1) {
+                    setState(() {
+                      _currentIndex++;
+                    });
+                    widget.onNextStepSelected(
+                        step: widget.solution[_currentIndex]);
+                  }
+                },
+                icon: Icon(Icons.skip_next),
               ),
             ],
           ),
