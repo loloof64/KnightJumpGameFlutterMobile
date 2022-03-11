@@ -26,4 +26,10 @@ class Cell {
 
   @override
   int get hashCode => file.index + 10 * rank.index;
+
+  @override
+  String toString() {
+    return "${String.fromCharCode('a'.codeUnitAt(0) + file.index)}"
+        "${String.fromCharCode('1'.codeUnitAt(0) + rank.index)}";
+  }
 }

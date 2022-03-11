@@ -19,6 +19,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:simple_chess_board/models/board_arrow.dart';
 import 'logic/board_utils.dart';
 import 'logic/constants.dart';
 import 'logic/board_elements.dart';
@@ -82,11 +83,15 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   var _blackAtBottom = false;
-  var _whitePlayerType = PlayerType.human;
+  var _whitePlayerType = PlayerType.computer;
   var _blackPlayerType = PlayerType.computer;
   var _fen = EMPTY_BOARD;
   var _playerHasWhite = true;
   var _ennemiesCount = MIN_ENEMIES_COUNT;
+  var _gameEnded = false;
+  BoardArrow? _lastMoveArrow = null;
+  var _solution = <SolutionStep>[];
+  var _startPosition = EMPTY_BOARD;
 
   void startNewGame() {
     if (_fen == EMPTY_BOARD)
@@ -140,10 +145,14 @@ class _MyHomePageState extends State<MyHomePage> {
                       _playerHasWhite ? PlayerType.human : PlayerType.computer;
                   _blackPlayerType =
                       _playerHasWhite ? PlayerType.computer : PlayerType.human;
-                  final newFen = generateGame(
+                  final newGame = generateGame(
                       playerHasWhite: _playerHasWhite,
                       ennemiesCount: _ennemiesCount);
-                  _fen = newFen;
+                  _gameEnded = false;
+                  _fen = newGame.initialPosition;
+                  _startPosition = newGame.initialPosition;
+                  _lastMoveArrow = null;
+                  _solution = newGame.solution;
                 });
               });
         });
@@ -188,6 +197,12 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
       );
+      setState(() {
+        _whitePlayerType = PlayerType.computer;
+        _blackPlayerType = PlayerType.computer;
+        _fen = _startPosition;
+        _gameEnded = true;
+      });
       return;
     }
     final gameWon = isGameWon(position: _fen, playerHasWhite: _playerHasWhite);
@@ -200,6 +215,12 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
       );
+      setState(() {
+        _whitePlayerType = PlayerType.computer;
+        _blackPlayerType = PlayerType.computer;
+        _fen = _startPosition;
+        _gameEnded = true;
+      });
     }
   }
 
@@ -217,6 +238,59 @@ class _MyHomePageState extends State<MyHomePage> {
 
     setState(() {
       _fen = newFen;
+    });
+  }
+
+  void _selectPreviousStep(
+      {required SolutionStep step, required SolutionStep? previousStep}) {
+    var newFen = _fen;
+    final board = positionToBoardArray(position: newFen);
+
+    board[step.from.rank.index][step.from.file.index] =
+        _playerHasWhite ? 'N' : 'n';
+    board[step.to.rank.index][step.to.file.index] = step.eatenEnnemy;
+    newFen = fenFromBoard(board: board, playerHasWhite: _playerHasWhite);
+
+    setState(() {
+      _fen = newFen;
+      _lastMoveArrow = previousStep != null
+          ? BoardArrow(
+              from: Cell.fromSquareIndex(previousStep.from.file.index +
+                      8 * (7 - previousStep.from.rank.index))
+                  .toString(),
+              to: Cell.fromSquareIndex(previousStep.to.file.index +
+                      8 * (7 - previousStep.to.rank.index))
+                  .toString(),
+              color: Colors.blueAccent)
+          : null;
+    });
+  }
+
+  void _selectNextStep({required SolutionStep step}) {
+    var newFen = _fen;
+    final board = positionToBoardArray(position: newFen);
+
+    board[step.from.rank.index][step.from.file.index] = '';
+    board[step.to.rank.index][step.to.file.index] = _playerHasWhite ? 'N' : 'n';
+    newFen = fenFromBoard(board: board, playerHasWhite: _playerHasWhite);
+
+    setState(() {
+      _fen = newFen;
+      _lastMoveArrow = BoardArrow(
+          from: Cell.fromSquareIndex(
+                  step.from.file.index + 8 * (7 - step.from.rank.index))
+              .toString(),
+          to: Cell.fromSquareIndex(
+                  step.to.file.index + 8 * (7 - step.to.rank.index))
+              .toString(),
+          color: Colors.blueAccent);
+    });
+  }
+
+  void _selectStartPosition() {
+    setState(() {
+      _fen = _startPosition;
+      _lastMoveArrow = null;
     });
   }
 
@@ -246,6 +320,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 children: <Widget>[
                   SimpleChessBoard(
                     fen: _fen,
+                    lastMoveToHighlight: _lastMoveArrow,
                     onMove: validateMove,
                     orientation: boardOrientation,
                     whitePlayerType: _whitePlayerType,
@@ -255,7 +330,17 @@ class _MyHomePageState extends State<MyHomePage> {
                       return null;
                     },
                     engineThinking: false,
-                  )
+                  ),
+                  if (_gameEnded)
+                    Padding(
+                      child: SolutionZone(
+                        solution: _solution,
+                        onFirstPositionSelected: _selectStartPosition,
+                        onPreviousStepSelected: _selectPreviousStep,
+                        onNextStepSelected: _selectNextStep,
+                      ),
+                      padding: EdgeInsets.all(5.0),
+                    )
                 ],
               )
             : Row(
@@ -264,6 +349,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 children: <Widget>[
                   SimpleChessBoard(
                     fen: _fen,
+                    lastMoveToHighlight: _lastMoveArrow,
                     onMove: validateMove,
                     orientation: boardOrientation,
                     whitePlayerType: _whitePlayerType,
@@ -273,7 +359,17 @@ class _MyHomePageState extends State<MyHomePage> {
                       return null;
                     },
                     engineThinking: false,
-                  )
+                  ),
+                  if (_gameEnded)
+                    Padding(
+                      child: SolutionZone(
+                        solution: _solution,
+                        onFirstPositionSelected: _selectStartPosition,
+                        onPreviousStepSelected: _selectPreviousStep,
+                        onNextStepSelected: _selectNextStep,
+                      ),
+                      padding: EdgeInsets.all(5.0),
+                    )
                 ],
               ),
       ),
@@ -357,6 +453,82 @@ class _EnnemiesCountSelectionDialogState
           textColor: Colors.white,
         ),
       ],
+    );
+  }
+}
+
+class SolutionZone extends StatefulWidget {
+  final List<SolutionStep> solution;
+  final void Function(
+      {required SolutionStep step,
+      required SolutionStep? previousStep}) onPreviousStepSelected;
+  final void Function({required SolutionStep step}) onNextStepSelected;
+  final void Function() onFirstPositionSelected;
+
+  const SolutionZone({
+    Key? key,
+    required this.solution,
+    required this.onPreviousStepSelected,
+    required this.onNextStepSelected,
+    required this.onFirstPositionSelected,
+  }) : super(key: key);
+
+  @override
+  State<SolutionZone> createState() => _SolutionZoneState();
+}
+
+class _SolutionZoneState extends State<SolutionZone> {
+  var _currentIndex = -1;
+
+  @override
+  Widget build(BuildContext context) {
+    final progressRatio = (_currentIndex + 1) / (widget.solution.length);
+
+    return Center(
+      child: Column(
+        children: [
+          I18nText('solution.zone_title'),
+          LinearProgressIndicator(
+            value: progressRatio,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              IconButton(
+                onPressed: () {
+                  if (_currentIndex > -1) {
+                    if (_currentIndex > 0) {
+                      widget.onPreviousStepSelected(
+                          step: widget.solution[_currentIndex],
+                          previousStep: _currentIndex > 0
+                              ? widget.solution[_currentIndex - 1]
+                              : null);
+                    } else {
+                      widget.onFirstPositionSelected();
+                    }
+                    setState(() {
+                      _currentIndex--;
+                    });
+                  }
+                },
+                icon: Icon(Icons.arrow_back),
+              ),
+              IconButton(
+                onPressed: () {
+                  if (_currentIndex < widget.solution.length - 1) {
+                    setState(() {
+                      _currentIndex++;
+                    });
+                    widget.onNextStepSelected(
+                        step: widget.solution[_currentIndex]);
+                  }
+                },
+                icon: Icon(Icons.arrow_forward),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

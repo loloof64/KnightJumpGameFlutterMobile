@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.loloof64.knight_jump_game">
    <application
-        android:label="@strings/app_title"
+        android:label="@string/app_title"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         <activity

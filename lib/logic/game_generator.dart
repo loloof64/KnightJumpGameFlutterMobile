@@ -2,10 +2,34 @@ import 'dart:math';
 import 'board_utils.dart';
 import 'board_elements.dart';
 
+class SolutionStep {
+  final Cell from;
+  final Cell to;
+  final String eatenEnnemy;
+
+  SolutionStep({
+    required this.from,
+    required this.to,
+    required this.eatenEnnemy,
+  });
+}
+
+class GeneratedGame {
+  final String initialPosition;
+  final List<SolutionStep> solution;
+
+  GeneratedGame({
+    required this.initialPosition,
+    required this.solution,
+  });
+}
+
 const _PIECES_TYPES = ['p', 'n', 'b', 'r', 'q'];
 
-String generateGame({bool playerHasWhite = true, int ennemiesCount = 10}) {
+GeneratedGame generateGame(
+    {bool playerHasWhite = true, int ennemiesCount = 10}) {
   var board = List.generate(8, (_) => List.generate(8, (_) => ''));
+  var solution = <SolutionStep>[];
 
   final knightSquare = _generatePlayerKnightLocation(
       board: board, playerHasWhite: playerHasWhite);
@@ -23,12 +47,22 @@ String generateGame({bool playerHasWhite = true, int ennemiesCount = 10}) {
         board: board,
         playerHasWhite: playerHasWhite);
     var nextEnemy = _generateEnemy(playerHasWhite: playerHasWhite);
+    solution.add(
+      SolutionStep(
+        from: previousCell,
+        to: nextEnemyCell,
+        eatenEnnemy: nextEnemy,
+      ),
+    );
     board[nextEnemyCell.rank.index][nextEnemyCell.file.index] = nextEnemy;
 
     previousCell = nextEnemyCell;
   }
 
-  return fenFromBoard(board: board, playerHasWhite: playerHasWhite);
+  return GeneratedGame(
+      initialPosition:
+          fenFromBoard(board: board, playerHasWhite: playerHasWhite),
+      solution: solution);
 }
 
 String _generateEnemy({required bool playerHasWhite}) {

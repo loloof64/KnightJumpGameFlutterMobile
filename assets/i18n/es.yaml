@@ -10,3 +10,5 @@ game:
   lost: "Has perdido."
   new_game_title: "Nuevo juego"
   ennemies_count: "Cuentan enemies"
+solution:
+  zone_title: "Solución"
