@@ -17,14 +17,17 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 import 'package:flutter/material.dart';
+import 'logic/board_utils.dart';
+import 'logic/board_elements.dart';
 import 'package:chess/chess.dart' as chesslib;
-import 'package:knight_jump_game/components/dialog_button.dart';
-import 'package:knight_jump_game/logic/game_generator.dart';
+import 'components/dialog_button.dart';
+import 'logic/game_generator.dart';
 import 'package:simple_chess_board/simple_chess_board.dart';
 import 'package:flutter_i18n/loaders/decoders/yaml_decode_strategy.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:logger/logger.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'logic/win_loss_check.dart';
 
 const EMPTY_BOARD = '8/8/8/8/8/8/8/8 w - - 0 1';
 
@@ -80,10 +83,11 @@ class _MyHomePageState extends State<MyHomePage> {
   var _blackAtBottom = false;
   var _whitePlayerType = PlayerType.human;
   var _blackPlayerType = PlayerType.computer;
-  var _chess = chesslib.Chess.fromFEN(EMPTY_BOARD);
+  var _fen = EMPTY_BOARD;
+  var _playerHasWhite = true;
 
   void startNewGame() {
-    if (_chess.fen == EMPTY_BOARD)
+    if (_fen == EMPTY_BOARD)
       doStartNewGame();
     else {
       showDialog(
@@ -119,32 +123,77 @@ class _MyHomePageState extends State<MyHomePage> {
   void doStartNewGame() {
     final newFen = generateGame(playerHasWhite: true);
     setState(() {
-      _chess = chesslib.Chess.fromFEN(newFen);
+      _fen = newFen;
     });
   }
 
   void validateMove({required ShortMove move}) {
     final playerSide = chesslib.Color.WHITE;
     final ennemySide = chesslib.Color.BLACK;
-    final playerSideFen = 'w';
+    final chess = chesslib.Chess.fromFEN(_fen);
 
-    final moveDefinition = {'from': move.from, 'to': move.to};
-    final fromPiece = _chess.get(move.from);
-    final toPiece = _chess.get(move.to);
+    final fromPiece = chess.get(move.from);
+    final toPiece = chess.get(move.to);
     if (fromPiece == null) return;
     if (fromPiece.type != chesslib.PieceType.KNIGHT ||
         fromPiece.color != playerSide) return;
     if (toPiece == null) return;
     if (toPiece.color != ennemySide) return;
-    final moveSuccess = _chess.move(moveDefinition);
+
+    final fromCell = Cell.fromAlgebraic(algebraic: move.from);
+    final toCell = Cell.fromAlgebraic(algebraic: move.to);
+    final deltaX = (fromCell.file.index - toCell.file.index).abs();
+    final deltaY = (fromCell.rank.index - toCell.rank.index).abs();
+    final moveSuccess = (deltaX + deltaY) == 3 && deltaX > 0 && deltaY > 0;
+
     if (moveSuccess) {
-      setState(() {
-        var newFenParts = _chess.fen.split(' ');
-        newFenParts[1] = playerSideFen;
-        final newFen = newFenParts.join(' ');
-        _chess = chesslib.Chess.fromFEN(newFen);
-      });
+      _movePlayerKnight(playerKnightCell: fromCell, targetCell: toCell);
+      checkForGameEnded();
     }
+  }
+
+  void checkForGameEnded() {
+    final gameLost =
+        isGameLost(position: _fen, playerHasWhite: _playerHasWhite);
+    if (gameLost) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [I18nText('game.lost')],
+          ),
+        ),
+      );
+      return;
+    }
+    final gameWon = isGameWon(position: _fen, playerHasWhite: _playerHasWhite);
+    if (gameWon) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [I18nText('game.won')],
+          ),
+        ),
+      );
+    }
+  }
+
+  void _movePlayerKnight({
+    required Cell playerKnightCell,
+    required Cell targetCell,
+  }) {
+    var newFen = _fen;
+    final board = positionToBoardArray(position: newFen);
+
+    board[7 - playerKnightCell.rank.index][playerKnightCell.file.index] = '';
+    board[7 - targetCell.rank.index][targetCell.file.index] =
+        _playerHasWhite ? 'N' : 'n';
+    newFen = fenFromBoard(board: board, playerHasWhite: _playerHasWhite);
+
+    setState(() {
+      _fen = newFen;
+    });
   }
 
   @override
@@ -172,7 +221,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
                   SimpleChessBoard(
-                    fen: _chess.fen,
+                    fen: _fen,
                     onMove: validateMove,
                     orientation: boardOrientation,
                     whitePlayerType: _whitePlayerType,
@@ -190,7 +239,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
                   SimpleChessBoard(
-                    fen: _chess.fen,
+                    fen: _fen,
                     onMove: validateMove,
                     orientation: boardOrientation,
                     whitePlayerType: _whitePlayerType,
