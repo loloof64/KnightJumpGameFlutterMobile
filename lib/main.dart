@@ -151,6 +151,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     final boardOrientation =
         _blackAtBottom ? BoardColor.black : BoardColor.white;
+    final isPortraitLayout =
+        MediaQuery.of(context).orientation == Orientation.portrait;
     return Scaffold(
       appBar: AppBar(
         title: I18nText('app.title'),
@@ -164,23 +166,43 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            SimpleChessBoard(
-              fen: _chess.fen,
-              onMove: validateMove,
-              orientation: boardOrientation,
-              whitePlayerType: _whitePlayerType,
-              blackPlayerType: _blackPlayerType,
-              showCoordinatesZone: false,
-              onPromote: () async {
-                return null;
-              },
-              engineThinking: false,
-            )
-          ],
-        ),
+        child: isPortraitLayout
+            ? Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  SimpleChessBoard(
+                    fen: _chess.fen,
+                    onMove: validateMove,
+                    orientation: boardOrientation,
+                    whitePlayerType: _whitePlayerType,
+                    blackPlayerType: _blackPlayerType,
+                    showCoordinatesZone: false,
+                    onPromote: () async {
+                      return null;
+                    },
+                    engineThinking: false,
+                  )
+                ],
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  SimpleChessBoard(
+                    fen: _chess.fen,
+                    onMove: validateMove,
+                    orientation: boardOrientation,
+                    whitePlayerType: _whitePlayerType,
+                    blackPlayerType: _blackPlayerType,
+                    showCoordinatesZone: false,
+                    onPromote: () async {
+                      return null;
+                    },
+                    engineThinking: false,
+                  )
+                ],
+              ),
       ),
     );
   }
