@@ -585,6 +585,7 @@ class _SolutionZoneState extends State<SolutionZone> {
           ),
           LinearProgressIndicator(
             value: progressRatio,
+            backgroundColor: Colors.redAccent,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
