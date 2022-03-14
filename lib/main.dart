@@ -362,6 +362,27 @@ class _MyHomePageState extends State<MyHomePage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 3.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        I18nText(
+                          'game.difficulty_label',
+                          translationParams: {
+                            'ennemiesCount': '$_ennemiesCount',
+                          },
+                          child: Text(
+                            '',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   SimpleChessBoard(
                     fen: _fen,
                     lastMoveToHighlight: _lastMoveArrow,
@@ -391,6 +412,22 @@ class _MyHomePageState extends State<MyHomePage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: I18nText(
+                      'game.difficulty_label',
+                      translationParams: {
+                        'ennemiesCount': '$_ennemiesCount',
+                      },
+                      child: Text(
+                        '',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
                   SimpleChessBoard(
                     fen: _fen,
                     lastMoveToHighlight: _lastMoveArrow,

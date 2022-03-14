@@ -10,6 +10,7 @@ game:
   lost: "Vous avez perdu."
   new_game_title: "Nouvelle partie"
   ennemies_count: "Nombre d'ennemis"
+  difficulty_label: "{ennemiesCount} ennemis"
 solution:
   zone_title: "Solution"
 help:
