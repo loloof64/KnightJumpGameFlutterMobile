@@ -294,6 +294,46 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void _showHelp() {
+    showDialog(
+        context: context,
+        builder: (ctx) {
+          return AlertDialog(
+            title: I18nText('app.title'),
+            content: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(''),
+                  I18nText('help.rules_line_1'),
+                  Text(''),
+                  I18nText('help.rules_line_2'),
+                  Text(''),
+                  I18nText('help.rules_line_3'),
+                  I18nText('help.rules_line_4'),
+                  I18nText('help.rules_line_5'),
+                  Text(''),
+                  I18nText('help.rules_line_6'),
+                  Text(''),
+                  I18nText('help.rules_line_7'),
+                  I18nText('help.rules_line_8'),
+                ],
+              ),
+            ),
+            actions: [
+              DialogActionButton(
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                },
+                textContent: I18nText('button.ok'),
+                backgroundColor: Colors.greenAccent,
+                textColor: Colors.white,
+              )
+            ],
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     final boardOrientation =
@@ -309,6 +349,10 @@ class _MyHomePageState extends State<MyHomePage> {
             icon: Icon(
               Icons.add,
             ),
+          ),
+          IconButton(
+            icon: Icon(Icons.help),
+            onPressed: _showHelp,
           ),
         ],
       ),

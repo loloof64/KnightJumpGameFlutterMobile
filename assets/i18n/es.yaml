@@ -12,3 +12,12 @@ game:
   ennemies_count: "Cuentan enemies"
 solution:
   zone_title: "Solución"
+help:
+  rules_line_1: "Su objetivo es comerte a todos los enemigos con su caballero solitario."
+  rules_line_2: "Cada movimiento debe ser una captura, y debe seguir la regla de ajedrez de movimiento del caballero."
+  rules_line_3: "El caballero puede:"
+  rules_line_4: "- mover un cuadrado a la izquierda / derecha y dos cuadrados hacia arriba / abajo"
+  rules_line_5: "- mover dos cuadrados a la izquierda /derecha y un cuadrado arriba/abajo"
+  rules_line_6: "También el caballero puede saltar sobre otras piezas, solo cuentan los cuadrados donde aterriza."
+  rules_line_7: "Se gana si no queda ennemy." 
+  rules_line_8: "Se pierde si queda al menos una pieza y no puedes comer ninguna de ellas en un solo movimiento."

@@ -12,3 +12,12 @@ game:
   ennemies_count: "Ennemies count"
 solution:
   zone_title: "Solution"
+help:
+  rules_line_1: "Your goal is to eat all ennemies with your lone knight."
+  rules_line_2: "Every move must be a capture, and must follow the knight's move chess rule."
+  rules_line_3: "The knight can either :"
+  rules_line_4: "- move one square left/right and two squares up/down"
+  rules_line_5: "- move two squares left/right and one square up/down"
+  rules_line_6: "Also the knight can jump over other pieces, only the squares where he lands count."
+  rules_line_7: "You win if there's no ennemy left." 
+  rules_line_8: "You loose if there's at least one piece left and you can't eat any of them in one move."

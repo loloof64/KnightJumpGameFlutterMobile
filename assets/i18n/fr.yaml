@@ -12,3 +12,12 @@ game:
   ennemies_count: "Nombre d'ennemis"
 solution:
   zone_title: "Solution"
+help:
+  rules_line_1: "Votre objectif est de manger tous les ennemis avec votre seul cavalier."
+  rules_line_2: "Tout mouvement doit être une capture, et doit suivre les règles du déplacement du cavalier aux échecs."
+  rules_line_3: "Le cavalier peut :"
+  rules_line_4: "- bouger d'une case sur la gauche/droite et de deux cases en haut/en bas"
+  rules_line_5: "- bouger de deux cases sur la gauche/droite et d'une case en haut/en bas"
+  rules_line_6: "Aussi le cavalier peut bouger au-dessus des autres pièces, seule la case où il arrive compte."
+  rules_line_7: "Vous gagnez s'il ne reste plus d'ennemi." 
+  rules_line_8: "Vous perdez s'il reste au moins un ennemi et que vous ne pouvez plus en manger en un coup."
