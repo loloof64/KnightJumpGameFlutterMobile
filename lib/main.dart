@@ -570,7 +570,19 @@ class _SolutionZoneState extends State<SolutionZone> {
     return Center(
       child: Column(
         children: [
-          I18nText('solution.zone_title'),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: I18nText(
+              'solution.zone_title',
+              child: Text(
+                '',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+              ),
+            ),
+          ),
           LinearProgressIndicator(
             value: progressRatio,
           ),
