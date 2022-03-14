@@ -442,14 +442,16 @@ class _MyHomePageState extends State<MyHomePage> {
                     engineThinking: false,
                   ),
                   if (_gameEnded)
-                    Padding(
-                      child: SolutionZone(
-                        solution: _solution,
-                        onFirstPositionSelected: _selectStartPosition,
-                        onPreviousStepSelected: _selectPreviousStep,
-                        onNextStepSelected: _selectNextStep,
+                    Expanded(
+                      child: Padding(
+                        child: SolutionZone(
+                          solution: _solution,
+                          onFirstPositionSelected: _selectStartPosition,
+                          onPreviousStepSelected: _selectPreviousStep,
+                          onNextStepSelected: _selectNextStep,
+                        ),
+                        padding: EdgeInsets.all(5.0),
                       ),
-                      padding: EdgeInsets.all(5.0),
                     )
                 ],
               ),
